@@ -1,56 +1,25 @@
-# From Assignment #6 - Generic Base Conversion ----------------------
-
-def convert(num: str, new_base: int, original_base: int=10) -> str:
-    '''
-    convert(num:str, new_base:int, original_base:int=10)
-    
-    Takes a string number and converts it to a new base from an
-    original base, supplied as integers. Returns number as a string in
-    the new base. Cannot convert to or from a base larger than 36.
-    '''
-
-    largest_base = max(new_base, original_base) 
-
-    if largest_base > 36: # Standard is not defined for larger bases
-        raise TypeError(
-            'Cannot convert to or from a base larger than 36'
-        ) from TypeError
-
-    values = "0123456789abcdefghijklmnopqrstuvwxyz"
-    value_dict = {values[i]: i
-        for i in range(largest_base)
-    }
-
-    x = num.lower()
-
-    # Converts string from original base to numeric value
-    accu = 0
-    rev = x[::-1]
-    for i in range(len(rev)):
-        accu += value_dict[rev[i]] * (original_base**i)
-
-    key_dict = {i: values[i] for i in range(len((values)))}
-
-    # Converts numeric value to string of new base
-    i = 0
-    rem = accu
-    str_val = "" if rem > 0 else "0"
-    while rem > 0:
-        str_val = key_dict[rem % new_base] + str_val
-        rem = rem // new_base
-        i += 1
-
-    return str_val
-
-
-
-# From Assignment #8 - Checkers -------------------------------------
-
 import copy
 
-### YOUR SOLUTION HERE
 class CheckersGame () :
-    def __init__ (self, board = False, turn = "white", isWon = False) :
+    '''
+    class CheckersGame(board=False, turn="white", isWon=False)
+
+    Object that contains datastructures and methods allowing a game of
+    checkers to be played.
+    '''
+
+    def __init__(self, board=False, turn="white", isWon=False):
+        '''
+        def __init__(self, board=False, turn="white", isWon=False):
+        
+        Initialize a checkers game. Optional parameters:
+        - board: Pass in a board as an 8x8 2D list.
+            Default is a standard checkers starting layout.
+        - turn: Specify the starting turn
+            Default is white
+        - isWon: Specify if this layout has already been won.
+            Defailt is False
+        '''
         
         if board:
             self.board = board
@@ -68,7 +37,14 @@ class CheckersGame () :
         self.whoseMove = turn
         self.isWon = isWon
     
-    def checkWinner(self) :
+    def checkWinner(self):
+        '''
+        def checkWinner(self):
+        
+        Checks if the current board layout would be considered a
+        winning layout and mutates the isWon value to specify the
+        winner of the game.
+        '''
         
         flatten = ["r" if a%2 == 0 else "w" for line in self.board for a in line if a != 0]
         
@@ -78,18 +54,33 @@ class CheckersGame () :
             else:
                 self.isWon = "red"
     
-    def changeTurn(self) :
+    def changeTurn(self):
+        '''
+        def changeTurn(self):
+
+        Switches the current player between "white" and "red" by
+        alternating each time this function is called.
+        '''
         
         self.whoseMove = "red" if self.whoseMove == "white" else "white"
     
-    def parseMove (self, move) :
+    def parseMove (self, move):
+        '''
+        def parseMove (self, move):
+
+        Parses a string input and returns a tuple construction of the
+        input moves.
+        - move: Move specifications as a string
+        '''
         
         individualMoves = move.split()
         processedMoves = []
         
         for each in individualMoves:
             if len(each) != 2 or len({*each} - {'0','1','2','3','4','5','6','7'}):
-                raise ValueError
+                raise ValueError(
+                    "Illegal move, cannot be parsed."
+                ) from ValueError
                 
             grab = lambda x: int(each[x]) 
             processedMoves.append( (grab(0), grab(1)) )
@@ -97,7 +88,16 @@ class CheckersGame () :
             
         return tuple(processedMoves)
     
-    def move(self, move, processed_moves = None, turn_switching = True) :
+    def move(self, move, processed_moves=None, turn_switching=True):
+        '''
+        def move(self, move, processed_moves=None, turn_switching=True):
+
+        Performs a given input move or set of moves recursively.
+        Can accept valid moves as string or tuple input. Assumes input
+        is valid. Optional parameters relevant during recursive steps
+        and should not be specified by user. Mutates internal data so
+        that the game reflects the move having been performed.
+        '''
         
         if processed_moves:
             moves = processed_moves
@@ -129,7 +129,15 @@ class CheckersGame () :
         if turn_switching:
             self.changeTurn()
         
-    def isValidMove(self, move, processed_moves = None, double_jump = False) :
+    def isValidMove(self, move, processed_moves=None, double_jump=False):
+        '''
+        def isValidMove(self, move, processed_moves=None, double_jump=False):
+
+        Method to check if an input move is a valid moveset
+        recursively. Input is taken as a string, unless pre-processed
+        moves are supplied. Returns true if it is a valid move, and
+        False if the move is invalid.
+        '''
 
         if processed_moves:
             moves = processed_moves
@@ -223,9 +231,8 @@ class CheckersGame () :
             return copyBoard.isValidMove("", processed_moves = moves[1:], double_jump = True)
         
  
-    # Function to print out a visual representation of the current
-    # board. Original method supplied in the 1MD3 Course Assignment,
-    # modified slightly by myself to display more "square"
+    # Function to print out a visual representation of the current board.
+    # Original method supplied by Mark Hutchison and Dr. Nicholas Moore from the 1MD3 Course 2022
     def __str__ (self) :
         out = "   0   1   2   3   4   5   6   7 \n ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\n"
         i = 0
@@ -246,9 +253,8 @@ class CheckersGame () :
         out += "╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝\n   0   1   2   3   4   5   6   7 \n"
         return out
 
-# Function to run a game of checkers from a predefined list of moves
-# or through an interactive console game.
-# Original code for function supplied in the 1MD3 Course Assignment
+# Function to run a game of checkers from a predefined list of moves or through an interactive console game.
+# Original method supplied by Mark Hutchison and Dr. Nicholas Moore from the 1MD3 Course 2022
 def runGame (init = False, moveList = False) :
     game = CheckersGame()
 
@@ -295,7 +301,7 @@ def runGame (init = False, moveList = False) :
     print(f"Congratulations, {game.isWon}!")
 
 
-# Here is sample game from start to end. Supplied by 1MD3 course assignment.
+# Sample game moves, supplied by Mark Hutchison and Dr. Nicholas Moore from the 1MD3 Course 2022
 
 moves = [ '50 41'
 , '23 32'
@@ -356,174 +362,3 @@ moves = [ '50 41'
 ]
 
 runGame(moveList = moves)
-
-
-
-# From Assignment #9 - File IO and Manipulation ---------------------
-
-'''
-Write a function `converter(swagger, outfile, filters)` which takes in a swagger.yaml file input, an output json file,
-and a list of filter functions. 
-
-- If `filters` is an empty list, just clone the YAML information to JSON.
-- Otherwise, the `filters` list will contain strings that are class names in the config.
-    - If there are items in `filters`, your output will be a dictionary like so:
-
-        output = {
-            'openapi': '...',
-            'info': { ... },
-            'tags': [ ... ],
-            'servers': [ ... ],
-            'paths': {
-                'path_including_filter_1': { ... },
-                'path_including_filter_2': { ... },
-            },
-            'components': {
-                'schemas': {
-                    'filter': { ... },
-                },
-                'responses': { ... },
-        }
-        
-    - `output['paths']`
-        - Only include items where the path name contains the filter item (no spaces, no capitals)
-    - `output['components']['schemas']`
-        - Only include items where the class name is EXACTLY equal to the filter item (Spaces and Capitals allowed)
-'''
-
-import json
-import yaml
-# import copy # Already imported above for A8
-
-
-def converter(swagger: str, outfile: str, filters: list) -> dict:
-    file_content = {}
-    output_data = {}
-    
-    out_file = outfile if outfile.endswith(".json") else outfile + ".json"
-    
-    try:
-        with open(swagger, "r") as file:
-            yaml_data = yaml.load(file, Loader=yaml.loader.SafeLoader)
-    
-    except Exception:
-        with open(swagger + ".yaml", "r") as file:
-            yaml_data = yaml.load(file, Loader=yaml.loader.SafeLoader)
-        
-    output = copy.deepcopy(yaml_data)
-    
-    if len(filters) > 0:
-        
-        alt_filters = [filt.lower().replace(" ", "") for filt in filters]
-
-        for path in yaml_data['paths']:
-            rem = True
-
-            for alt_filt in alt_filters:
-                if alt_filt in path:
-                    rem = False
-                    break
-
-            if rem:
-                output['paths'].pop(path)
-
-        for schema in yaml_data['components']['schemas']:
-
-            if schema not in filters:
-                output['components']['schemas'].pop(schema)
-
-        with open(out_file, "w") as file:
-            json.dump(output, file)    
-    
-    return output
-
-print(
-    converter(
-        'config1.yaml',
-        'config1out.json',
-        ['Auth', 'Notification']
-        )
-)
-
-
-
-# Personal notes and practice - sqlite3 -----------------------------
-
-# SQL NOTES
-import sqlite3
-
-connection = sqlite3.connect("aquarium.db")
-
-# Cursor is an object which allows us to send and manipulate SQL commands as strings.
-cursor = connection.cursor()
-cursor.execute("DROP TABLE IF EXISTS fish")
-cursor.execute("CREATE TABLE IF NOT EXISTS fish (id INTEGER PRIMARY KEY, name TEXT, species TEXT, tank_number INTEGER)")
-
-for each in [('Sammy', 'shark', 1), ('Jamie', 'cuttlefish', 7), ('Jax', 'Octopus', 7)]:
-    cursor.execute("INSERT INTO fish (name, species, tank_number) VALUES (?, ?, ?)", each)
-                                            #Cannot use ? and (tuple,) instead of (?, ?, ?)
-
-cursor.execute("DELETE FROM fish WHERE name = ?", ("Sammy",)) #Ensure that values are always passed in as a tuple!
-cursor.execute("UPDATE fish SET tank_number = ? WHERE name = ?" (3, "Jax"))
-cursor.execute("UPDATE fish SET species = 'Micheal Jackson' WHERE name LIKE 'J%'")
-connection.commit() # Update database with changes
-rows = cursor.execute("SELECT * FROM fish").fetchall() # Select all from fish
-
-
-# SQL Practice Question
-''' QUESTION WRITTEN BY RICHIE MOTORGEANU (https://github.com/Multipixels)
-    ANSWER WRITTEN BY MYSELF
-Implement the function `getSongDict(database)` that will return a dictionary with the relevant data from the database.
-The dictionary will have the following format.
-
-The key for each entry should be its trackid (as a string). Value is a dictionary of relevant data.
-
-{
-    trackid (string): {
-        'trackname': string,
-        'genre': string,
-        'genreid': int,
-        'composer': string,
-        'album': {
-            'albumtitle': string,
-            'artistname': string
-         }
-    },
-    trackid (string): {
-        'trackname': string,
-        'genre': string,
-        'genreid': int,
-        'composer': string,
-        'album': {
-            'albumtitle': string,
-            'artistname': string
-         }
-    }
-}
-'''
-import sqlite3
-
-def getSongDict(database):
-    
-    connection = sqlite3.connect(database)
-    cursor = connection.cursor()
-
-    trackParse = cursor.execute(
-        "SELECT TrackId, tracks.Name, genres.Name, tracks.GenreId, Composer, albums.Title, artists.Name \
-        FROM tracks, genres, albums, artists \
-        WHERE tracks.GenreId = genres.GenreId \
-        AND tracks.AlbumId = albums.AlbumId \
-        AND albums.ArtistId = artists.ArtistId"
-        ).fetchall()
-
-    connection.close()
-
-    return { str(each[0]): {
-             'trackname': each[1],
-             'genre': each[2],
-             'genreid': each[3],
-             'composer': each[4],
-             'album': {'albumtitle': each[5], 'artistname': each[6]},
-            } for each in trackParse }
-
-print(getSongDict("chinook.db"))
