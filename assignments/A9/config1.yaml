@@ -1,0 +1,1807 @@
+openapi: 3.0.3
+info:
+  title: Project
+  description: |
+    Description of project that cannot be named.
+    Last update: 2021-04-08
+  version: 1.0.0
+servers:
+- url: http://localhost:6060
+  description: Direct access
+tags:
+- name: Identification
+- name: Chat
+- name: Link
+- name: Notification
+- name: User
+- name: Websocket
+paths:
+  /api/v1/chat:
+    get:
+      summary: Fetch challenge chat messages
+      description: Returns chat messages for challenge.
+      tags:
+      - Chat
+      parameters:
+      - name: challenge
+        in: query
+        description: The UUID of the Challenge
+        required: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: Number of records to return
+        required: false
+        schema:
+          type: number
+          default: "10"
+      responses:
+        "200":
+          description: Successfully fetched chat messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getHandlerResp'
+              example:
+                messages:
+                - payload: testing 2
+                  sender: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+                  senderName: Test User
+                  time: "2020-03-11T13:27:00Z"
+                  type: chat
+                - payload: testing
+                  sender: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+                  senderName: Test User
+                  time: "2020-03-11T13:25:00Z"
+                  type: chat
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/notification:
+    get:
+      summary: Fetch challenge notifications
+      description: Returns notifications for challenge.
+      tags:
+      - Notification
+      parameters:
+      - name: challenge
+        in: query
+        description: UUID of challenge
+        required: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: Number of challenges to return
+        required: false
+        schema:
+          type: number
+          default: "10"
+      responses:
+        "200":
+          description: Successfully fetched notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getHandlerResp'
+              example:
+                notifications:
+                - payload: Test User has pinned an item.
+                  sender: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+                  senderName: Test User
+                  time: "2020-03-11T13:27:00Z"
+                  type: notification
+                - payload: Test User has pinned an item.
+                  sender: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+                  senderName: Test User
+                  time: "2020-03-11T13:25:00Z"
+                  type: notification
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/user/{userUUID}:
+    get:
+      summary: Fetch single user
+      description: Returns user by UUID
+      tags:
+      - User
+      parameters:
+      - name: userUUID
+        in: path
+        description: UUID of user
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successfully fetched User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSingleHandlerResp'
+              example:
+                user:
+                  email: tanner@0xt.ca
+                  name: Tanner Ryan
+                  username: tanner@0xt.ca
+                  uuid: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/user/facilitator:
+    get:
+      summary: Fetch accessible facilitators
+      description: Returns facilitators accessible for the provided organization.
+        This should be called to determine facilitators that can be added to a challenge
+        for a given organization.
+      tags:
+      - User
+      parameters:
+      - name: org
+        in: query
+        description: UUID of organization
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        description: Autocomplete name/email string
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: Number of users to return
+        required: false
+        schema:
+          type: number
+          default: "10"
+      responses:
+        "200":
+          description: Successfully fetched accessible users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getHandlerResp'
+              example:
+                users:
+                - email: test@basadur.com
+                  name: Test User
+                  username: test@basadur.com
+                  uuid: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/user/participant:
+    get:
+      summary: Fetch accessible participants
+      description: Returns participants accessible for the provided organization.
+        This should be called to determine participants that can be added to a challenge
+        for a given organization.
+      tags:
+      - User
+      parameters:
+      - name: org
+        in: query
+        description: UUID of organization
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: query
+        description: Autocomplete name/email string
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: Number of users to return
+        required: false
+        schema:
+          type: number
+          default: "10"
+      responses:
+        "200":
+          description: Successfully fetched accessible users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getHandlerResp'
+              example:
+                users:
+                - email: test@basadur.com
+                  name: Test User
+                  username: test@basadur.com
+                  uuid: 351e6bac-0914-47ee-8fec-cce4a7eac1a3
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/ws/auth:
+    get:
+      summary: Get websocket token
+      description: Returns a temporary authentication token for connecting to the
+        websocket feeds. The token is valid for a specific challenge. The token issued
+        is only valid for 15 seconds.
+      tags:
+      - Websocket
+      parameters:
+      - name: challenge
+        in: query
+        description: UUID of challenge
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Websocket token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authHandlerResp'
+              example:
+                data: Successfully generated websocket authorization token, valid
+                  for 15s.
+                success: true
+                token: iJV8ob8oqN8a929Vhm5OX4abgnafWPsy3YHmqx3LPms=
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /id/auth:
+    post:
+      summary: Generate user authentication token
+      description: Generates a URL containing a temporary access token for authenticating
+        with the challenge mapping application. User browser must be redirected to
+        this URL to perform authentication. URL is valid for 30 seconds. Requires
+        `Authorization` header sent with request.
+      tags:
+      - Identification
+      parameters:
+      - name: username
+        in: query
+        description: Username to authenticate
+        required: true
+        schema:
+          type: string
+      - name: challenge
+        in: query
+        description: UUID of challenge to redirect user to
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful token generation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authHandlerResp'
+              example:
+                data: Generated authentication URL for test@basadur.com, expires in
+                  30s.
+                success: true
+                url: https://challenge.basadurprofile.com/id/login?token=-j1j0tTWiwsGfta7L6LgqgdN-Rj8mgFYg-6YilNOlHo=
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /id/init:
+    get:
+      summary: Fetch synchronized organizations
+      description: Performs redirect to Basadur site to perform user authentication.
+      tags:
+      - Identification
+      responses:
+        "307":
+          description: Redirect to Basadur site
+  /id/initLogout:
+    get:
+      summary: Start logout flow
+      description: Terminates user session and performs redirect to login page.
+      tags:
+      - Identification
+      responses:
+        "307":
+          description: Redirect to login page
+  /id/login:
+    get:
+      summary: Authenticate user
+      description: Log user in using temporary authentication URL.
+      tags:
+      - Identification
+      parameters:
+      - name: token
+        in: query
+        description: Temporary access token
+        required: true
+        schema:
+          type: string
+      responses:
+        "307":
+          description: Successfully authenticated
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /id/orgs:
+    get:
+      summary: Fetch synchronized organizations
+      description: Fetches synchronized organizations. Requires `Authorization` header
+        sent with request.
+      tags:
+      - Identification
+      responses:
+        "200":
+          description: Successfully fetched organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orgsHandlerResp'
+              example:
+                organizations:
+                - id: 11330
+                  license:
+                    expiry: "2021-06-29T20:00:00-04:00"
+                    name: Challenge Mapping Unlimited Beta Subscription
+                    seats: 9999
+                  name: Fyelabs
+                - id: 10374
+                  license:
+                    expiry: "2021-06-29T20:00:00-04:00"
+                    name: Challenge Mapping Unlimited Beta Subscription
+                    seats: 9999
+                  name: Conekt
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /id/search:
+    get:
+      summary: Fetch synchronized account
+      description: Fetches synchronized account by username. Returns error if account
+        does not exist. Requires `Authorization` header sent with request.
+      tags:
+      - Identification
+      parameters:
+      - name: username
+        in: query
+        description: Account username
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successfully fetched account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/searchHandlerResp'
+              example:
+                account:
+                  activated: true
+                  email: test@basadur.com
+                  globalCofacilitator: true
+                  name: Test Account
+                  organizations:
+                  - id: 1000
+                    role: org_admin
+                  systemAdmin: true
+                  username: test@basadur.com
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /id/sync:
+    post:
+      summary: Authenticated user synchronization
+      description: Synchronizes accounts. Creates a new account or updates existing.
+        User will become member of all organizations provided (must send all). Requires
+        `Authorization` header sent with request.
+      tags:
+      - Identification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/syncHandlerReq'
+            example:
+              accounts:
+              - activated: true
+                email: test@basadur.com
+                globalCofacilitator: true
+                name: Test Account
+                organizations:
+                - id: 1000
+                  role: org_admin
+                systemAdmin: true
+                username: test@basadur.com
+        required: true
+      responses:
+        "200":
+          description: Successully synchronized accounts(s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/syncHandlerResp'
+              example:
+                data: Successfully synchronized 1 account(s) spanning 1 organization(s).
+                success: true
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /id/syncOrg:
+    post:
+      summary: Authenticated organization synchronization
+      description: Synchronizes organizations with licensing information. Creates
+        a new organization or updates an existing organization. Requires `Authorization`
+        header sent with request.
+      tags:
+      - Identification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/syncOrgHandlerReq'
+            example:
+              organizations:
+              - id: 1
+                license:
+                  expiry: "2018"
+                  name: Challenge Mapping Unlimited Beta Subscription
+                  seats: 9999
+                name: Tanner Ryan
+        required: true
+      responses:
+        "200":
+          description: Successfully synchronized organization(s)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/syncOrgHandlerResp'
+              example:
+                data: Successfully synchronized 1 organization(s).
+                success: true
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /l:
+    get:
+      summary: Resolve short URL
+      description: Resolves a short URL.
+      tags:
+      - Link
+      parameters:
+      - name: id
+        in: query
+        description: Short link identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        "307":
+          description: Redirect to direct link
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    ActionMessage:
+      type: object
+      required:
+      - ActionType
+      - Action
+      properties:
+        Action:
+          $ref: '#/components/schemas/RawMessage'
+        ActionType:
+          type: string
+    ActionQueueEntry:
+      type: object
+    Auth:
+      type: object
+      required:
+      - UUID
+      - Username
+      - Email
+      - Name
+      - Activated
+      - LastActivity
+      - LastSync
+      - SystemAdmin
+      - GlobalCofacilitator
+      properties:
+        Activated:
+          type: boolean
+        Email:
+          type: string
+        GlobalCofacilitator:
+          type: boolean
+        LastActivity:
+          $ref: '#/components/schemas/Time'
+        LastSync:
+          $ref: '#/components/schemas/Time'
+        Name:
+          type: string
+        SystemAdmin:
+          type: boolean
+        UUID:
+          type: string
+        Username:
+          type: string
+    AuthChallenge:
+      type: object
+      required:
+      - UUID
+      - Auth
+      - Challenge
+      - Scope
+      properties:
+        Auth:
+          type: string
+        Challenge:
+          type: string
+        Scope:
+          $ref: '#/components/schemas/AuthClass'
+        UUID:
+          type: string
+    AuthClass:
+      type: string
+      enum:
+      - OrgAdmin
+      - OrgAdminFacilitator
+      - OrgStandard
+      - ChallengeFacilitator
+      - ChallengeCofacilitator
+      - ChallengeParticipant
+    AuthConfig:
+      type: object
+      required:
+      - SyncToken
+      - Production
+      properties:
+        Production:
+          type: boolean
+        SyncToken:
+          type: string
+    AuthOrganization:
+      type: object
+      required:
+      - UUID
+      - Auth
+      - Organization
+      - Scope
+      properties:
+        Auth:
+          type: string
+        Organization:
+          type: string
+        Scope:
+          $ref: '#/components/schemas/AuthClass'
+        UUID:
+          type: string
+    AuthSession:
+      type: object
+      required:
+      - Identifier
+      - Auth
+      - Updated
+      - Expiry
+      - Type
+      - Payload
+      properties:
+        Auth:
+          type: string
+        Expiry:
+          $ref: '#/components/schemas/Time'
+        Identifier:
+          type: string
+        Payload:
+          type: string
+        Type:
+          $ref: '#/components/schemas/AuthSessionType'
+        Updated:
+          $ref: '#/components/schemas/Time'
+    AuthSessionType:
+      type: string
+      enum:
+      - AuthSessionStandard
+      - AuthSessionWebsocket
+      - AuthSessionInit
+    Challenge:
+      type: object
+      required:
+      - UUID
+      - Organization
+      - Name
+      - CreatedBy
+      - Archived
+      - Phrase
+      - NodeColors
+      - DefaultNodeColor
+      - FontColors
+      - DefaultFontColor
+      - LinkColors
+      - DefaultLinkColor
+      - DotColors
+      - DefaultDotColor
+      properties:
+        Archived:
+          type: boolean
+        CreatedBy:
+          type: string
+        DefaultFontColor:
+          type: string
+        DefaultLinkColor:
+          type: string
+        DefaultNodeColor:
+          type: string
+        DefaultDotColor:
+          type: string
+        DotColors:
+          $ref: '#/components/schemas/ChallengeColorList'
+        FontColors:
+          $ref: '#/components/schemas/ChallengeColorList'
+        LinkColors:
+          $ref: '#/components/schemas/ChallengeColorList'
+        Name:
+          type: string
+        NodeColors:
+          $ref: '#/components/schemas/ChallengeColorList'
+        Organization:
+          type: string
+        Phrase:
+          type: string
+        UUID:
+          type: string
+    ChallengeCancelState:
+      type: object
+    ChallengeCanvas:
+      type: object
+      required:
+      - Challenge
+      - Canvas
+      properties:
+        Canvas:
+          items:
+            oneOf:
+            - type: integer
+          type: array
+        Challenge:
+          type: string
+    ChallengeChat:
+      type: object
+      required:
+      - UUID
+      - Challenge
+      - Auth
+      - Time
+      - Content
+      properties:
+        Auth:
+          type: string
+        Challenge:
+          type: string
+        Content:
+          type: string
+        Time:
+          $ref: '#/components/schemas/Time'
+        UUID:
+          type: string
+    ChallengeColor:
+      type: object
+      required:
+      - Label
+      - Code
+      properties:
+        Code:
+          type: string
+        Label:
+          type: string
+    ChallengeColorList:
+      type: array
+      items: {}
+    ChallengeFact:
+      type: object
+      required:
+      - UUID
+      - Challenge
+      - Auth
+      - Created
+      - Content
+      properties:
+        Auth:
+          type: string
+        Challenge:
+          type: string
+        Content:
+          type: string
+        Created:
+          $ref: '#/components/schemas/Time'
+        UUID:
+          type: string
+    ChallengeHMW:
+      type: object
+      required:
+      - UUID
+      - Challenge
+      - Auth
+      - Created
+      - Content
+      properties:
+        Auth:
+          type: string
+        Challenge:
+          type: string
+        Content:
+          type: string
+        Created:
+          $ref: '#/components/schemas/Time'
+        UUID:
+          type: string
+    ChallengeInvite:
+      type: object
+      required:
+      - UUID
+      - Email
+      - Challenge
+      - Scope
+      properties:
+        Challenge:
+          type: string
+        Email:
+          type: string
+        Scope:
+          $ref: '#/components/schemas/AuthClass'
+        UUID:
+          type: string
+    ChallengeInviteState:
+      type: object
+    ChallengeNotification:
+      type: object
+      required:
+      - UUID
+      - Challenge
+      - Auth
+      - Time
+      - Content
+      properties:
+        Auth:
+          type: string
+        Challenge:
+          type: string
+        Content:
+          type: string
+        Time:
+          $ref: '#/components/schemas/Time'
+        UUID:
+          type: string
+    ChallengeSchedule:
+      type: object
+      required:
+      - UUID
+      - Challenge
+      - StartTime
+      - EndTime
+      properties:
+        Challenge:
+          type: string
+        EndTime:
+          $ref: '#/components/schemas/Time'
+        StartTime:
+          $ref: '#/components/schemas/Time'
+        UUID:
+          type: string
+    ChallengeState:
+      type: object
+    ChallengeThought:
+      type: object
+      required:
+      - UUID
+      - Challenge
+      - Auth
+      - Created
+      - Content
+      - Pins
+      - Public
+      properties:
+        Auth:
+          type: string
+        Challenge:
+          type: string
+        Content:
+          type: string
+        Created:
+          $ref: '#/components/schemas/Time'
+        Pins:
+          $ref: '#/components/schemas/StringList'
+        Public:
+          type: boolean
+        UUID:
+          type: string
+    ChangeLinkColor:
+      type: object
+      required:
+      - LinkID
+      - NewColor
+      properties:
+        LinkID:
+          type: string
+        NewColor:
+          type: string
+    ChangeLinkThickness:
+      type: object
+      required:
+      - LinkID
+      - NewThickness
+      properties:
+        LinkID:
+          type: string
+        NewThickness:
+          type: integer
+    ChangeNodeFill:
+      type: object
+      required:
+      - NodeID
+      - NewFill
+      properties:
+        NewFill:
+          type: string
+        NodeID:
+          type: string
+    ChangeNodeFont:
+      type: object
+      required:
+      - NodeID
+      - NewFont
+      properties:
+        NewFont:
+          type: string
+        NodeID:
+          type: string
+    ChangeNodeFontColor:
+      type: object
+      required:
+      - NodeID
+      - NewFontColor
+      properties:
+        NewFontColor:
+          type: string
+        NodeID:
+          type: string
+    ChangeNodePin:
+      type: object
+      required:
+      - NodeID
+      - PinState
+      properties:
+        NodeID:
+          type: string
+        PinState:
+          type: boolean
+    ChangeNodeText:
+      type: object
+      required:
+      - NodeID
+      - NewText
+      properties:
+        NewText:
+          type: string
+        NodeID:
+          type: string
+    Client:
+      type: object
+    CommonConfig:
+      type: object
+      required:
+      - AppName
+      - LogLevel
+      properties:
+        AppName:
+          type: string
+        LogLevel:
+          type: string
+    Config:
+      type: object
+      required:
+      - Common
+      - Postgres
+      - Sendgrid
+      - Auth
+      - Email
+      properties:
+        Auth:
+          $ref: '#/components/schemas/AuthConfig'
+        Common:
+          $ref: '#/components/schemas/CommonConfig'
+        Email:
+          $ref: '#/components/schemas/EmailConfig'
+        Postgres:
+          $ref: '#/components/schemas/PostgresConfig'
+        Sendgrid:
+          $ref: '#/components/schemas/SendgridConfig'
+    CreateLink:
+      type: object
+      required:
+      - NodeAID
+      - NodeBID
+      - Thickness
+      - Color
+      properties:
+        Color:
+          type: string
+        NodeAID:
+          type: string
+        NodeBID:
+          type: string
+        Thickness:
+          type: integer
+    CreateNode:
+      type: object
+      required:
+      - X
+      - "Y"
+      - Width
+      - Height
+      - Text
+      - Fill
+      - Font
+      - FontColor
+      properties:
+        Fill:
+          type: string
+        Font:
+          type: string
+        FontColor:
+          type: string
+        Height:
+          type: number
+        Text:
+          type: string
+        Width:
+          type: number
+        X:
+          type: number
+        "Y":
+          type: number
+    CreateNodeFromFact:
+      type: object
+      required:
+      - X
+      - "Y"
+      - Width
+      - Height
+      - Fill
+      - Font
+      - FontColor
+      - FactID
+      properties:
+        FactID:
+          type: string
+        Fill:
+          type: string
+        Font:
+          type: string
+        FontColor:
+          type: string
+        Height:
+          type: number
+        Width:
+          type: number
+        X:
+          type: number
+        "Y":
+          type: number
+    CreateNodeFromHMW:
+      type: object
+      required:
+      - X
+      - "Y"
+      - Width
+      - Height
+      - Fill
+      - Font
+      - FontColor
+      - HMWID
+      properties:
+        Fill:
+          type: string
+        Font:
+          type: string
+        FontColor:
+          type: string
+        HMWID:
+          type: string
+        Height:
+          type: number
+        Width:
+          type: number
+        X:
+          type: number
+        "Y":
+          type: number
+    CreateNodeFromThought:
+      type: object
+      required:
+      - X
+      - "Y"
+      - Width
+      - Height
+      - Fill
+      - Font
+      - FontColor
+      - ThoughtID
+      properties:
+        Fill:
+          type: string
+        Font:
+          type: string
+        FontColor:
+          type: string
+        Height:
+          type: number
+        ThoughtID:
+          type: string
+        Width:
+          type: number
+        X:
+          type: number
+        "Y":
+          type: number
+    DeleteLink:
+      type: object
+      required:
+      - LinkID
+      properties:
+        LinkID:
+          type: string
+    DeleteNode:
+      type: object
+      required:
+      - NodeID
+      properties:
+        NodeID:
+          type: string
+    EmailConfig:
+      type: object
+      required:
+      - LogoLink
+      - AssetPath
+      - AuthRegisterURL
+      - AuthLoginURL
+      properties:
+        AssetPath:
+          type: string
+        AuthLoginURL:
+          type: string
+        AuthRegisterURL:
+          type: string
+        LogoLink:
+          type: string
+    EventFrame:
+      type: object
+      required:
+      - Time
+      - Type
+      - Sender
+      - SenderName
+      - Payload
+      properties:
+        Participants:
+          items:
+            oneOf:
+            - type: string
+          type: array
+        Payload:
+          type: string
+        Sender:
+          type: string
+        SenderName:
+          type: string
+        Time:
+          $ref: '#/components/schemas/Time'
+        Type:
+          $ref: '#/components/schemas/FrameType'
+    File:
+      type: object
+    FrameType:
+      type: string
+      enum:
+      - Chat
+      - Notification
+      - RefreshHMW
+      - RefreshFact
+      - RefreshThought
+      - RefreshChallenge
+      - RefershParticipants
+    GeneralResponse:
+      type: object
+      required:
+      - Success
+      - Data
+      properties:
+        Data:
+          type: string
+        Success:
+          type: boolean
+    Link:
+      type: object
+      required:
+      - UUID
+      - ShortID
+      - LongURL
+      properties:
+        LongURL:
+          type: string
+        ShortID:
+          type: string
+        UUID:
+          type: string
+    MiddlewareSession:
+      type: object
+    MoveNode:
+      type: object
+      required:
+      - NodeID
+      - Newx
+      - Newy
+      properties:
+        Newx:
+          type: number
+        Newy:
+          type: number
+        NodeID:
+          type: string
+    Node:
+      type: object
+      required:
+      - ID
+      - X
+      - "Y"
+      - Width
+      - Height
+      - Fill
+      - Text
+      - Font
+      - FontColor
+      - Pinned
+      properties:
+        Fill:
+          type: string
+        Font:
+          type: string
+        FontColor:
+          type: string
+        Height:
+          type: number
+        ID:
+          type: string
+        Pinned:
+          items:
+            oneOf:
+            - type: string
+          type: array
+        Text:
+          type: string
+        Width:
+          type: number
+        X:
+          type: number
+        "Y":
+          type: number
+    Organization:
+      type: object
+      required:
+      - UUID
+      - Name
+      - ID
+      properties:
+        ID:
+          type: integer
+        Name:
+          type: string
+        UUID:
+          type: string
+    OrganizationLicense:
+      type: object
+      required:
+      - UUID
+      - Organization
+      - Name
+      - LicensedSeats
+      - Expiry
+      properties:
+        Expiry:
+          $ref: '#/components/schemas/Time'
+        LicensedSeats:
+          type: integer
+        Name:
+          type: string
+        Organization:
+          type: string
+        UUID:
+          type: string
+    PostgresConfig:
+      type: object
+      required:
+      - Host
+      - DB
+      - User
+      - Pass
+      properties:
+        DB:
+          type: string
+        Host:
+          type: string
+        Pass:
+          type: string
+        User:
+          type: string
+    RawMessage:
+      items: {}
+      type: array
+    ResizeNode:
+      type: object
+      required:
+      - NodeID
+      - NewWidth
+      - NewHeight
+      properties:
+        NewHeight:
+          type: number
+        NewWidth:
+          type: number
+        NodeID:
+          type: string
+    SendgridConfig:
+      type: object
+      required:
+      - SendGridToken
+      - SendGridEmail
+      - SendGridName
+      - SendGridDomain
+      properties:
+        SendGridDomain:
+          type: string
+        SendGridEmail:
+          type: string
+        SendGridName:
+          type: string
+        SendGridToken:
+          type: string
+    State:
+      type: object
+    StringList:
+      type: array
+      items: {}
+    SyntheticChallengeSchedule:
+      type: object
+      required:
+      - Challenge
+      - StartTime
+      - EndTime
+      properties:
+        Challenge:
+          type: string
+        EndTime:
+          $ref: '#/components/schemas/Time'
+        StartTime:
+          $ref: '#/components/schemas/Time'
+    SyntheticOrganization:
+      type: object
+      required:
+      - UUID
+      - Name
+      - ID
+      - Users
+      properties:
+        ID:
+          type: integer
+        Name:
+          type: string
+        UUID:
+          type: string
+        Users:
+          type: integer
+    Time:
+      type: string
+    WebsocketState:
+      type: object
+    authHandlerResp:
+      type: object
+      required:
+      - Token
+      properties:
+        Token:
+          type: string
+    challengeFullPermission:
+      type: object
+      required:
+      - IsParticipant
+      - IsFacilitator
+      - IsCofacilitator
+      - CanModify
+      properties:
+        CanModify:
+          type: boolean
+        IsCofacilitator:
+          type: boolean
+        IsFacilitator:
+          type: boolean
+        IsParticipant:
+          type: boolean
+    challengeParticipant:
+      type: object
+      required:
+      - UUID
+      - Name
+      - Username
+      - Email
+      - Scope
+      properties:
+        Email:
+          type: string
+        Name:
+          type: string
+        Scope:
+          type: string
+        UUID:
+          type: string
+        Username:
+          type: string
+    challengePermission:
+      type: object
+      required:
+      - UUID
+      - Organization
+      - Name
+      - IsParticipant
+      - IsFacilitator
+      - IsCofacilitator
+      - CanModify
+      properties:
+        CanModify:
+          type: boolean
+        IsCofacilitator:
+          type: boolean
+        IsFacilitator:
+          type: boolean
+        IsParticipant:
+          type: boolean
+        Name:
+          type: string
+        Organization:
+          type: string
+        UUID:
+          type: string
+    challengeSchedule:
+      type: object
+      required:
+      - StartTime
+      - EndTime
+      properties:
+        EndTime:
+          $ref: '#/components/schemas/Time'
+        StartTime:
+          $ref: '#/components/schemas/Time'
+    ctxLog:
+      type: object
+    ctxLogKey:
+      type: object
+    ctxMiddlewareSession:
+      type: object
+    deleteHandlerResp:
+      $ref: '#/components/schemas/GeneralResponse'
+    getChallengeHandlerResp:
+      type: object
+      required:
+      - Challenge
+      properties:
+        Challenge:
+          $ref: '#/components/schemas/challengeFullPermission'
+        Schedule:
+          items:
+            $ref: '#/components/schemas/ChallengeSchedule'
+          type: array
+        OrganizationID:
+          type: number
+    getCurrentHandlerResp:
+      type: object
+      required:
+      - Account
+      - Organizations
+      properties:
+        Account:
+          $ref: '#/components/schemas/Auth'
+        Organizations:
+          items:
+            $ref: '#/components/schemas/AuthOrganization'
+          type: array
+    getHandlerResp:
+      type: object
+      required:
+      - Users
+      properties:
+        Users:
+          items:
+            $ref: '#/components/schemas/userResp'
+          type: array
+    getOrganizationHandlerResp:
+      type: object
+      required:
+      - Organization
+      properties:
+        Organization:
+          $ref: '#/components/schemas/Organization'
+    getParticipantsHandlerResp:
+      type: object
+      required:
+      - Participants
+      properties:
+        Participants:
+          items:
+            $ref: '#/components/schemas/challengeParticipant'
+          type: array
+    getSingleHandlerResp:
+      type: object
+      required:
+      - User
+      properties:
+        User:
+          $ref: '#/components/schemas/userResp'
+    health:
+      type: object
+      required:
+      - Name
+      - Build
+      - IsDocker
+      - DatabasePing
+      - Time
+      - Uptime
+      properties:
+        Build:
+          type: string
+        DatabasePing:
+          type: boolean
+        IsDocker:
+          type: boolean
+        Name:
+          type: string
+        Time:
+          type: string
+        Uptime:
+          type: string
+    linkMessage:
+      type: object
+      required:
+      - ID
+      - AID
+      - BID
+      - Thickness
+      - Color
+      properties:
+        AID:
+          type: string
+        BID:
+          type: string
+        Color:
+          type: string
+        ID:
+          type: string
+        Thickness:
+          type: integer
+    nodeMessage:
+      type: object
+      required:
+      - ID
+      - X
+      - "Y"
+      - Width
+      - Height
+      - Fill
+      - Text
+      - Font
+      - FontColor
+      - PinCount
+      - PinnedByMe
+      - Pinned
+      properties:
+        Fill:
+          type: string
+        Font:
+          type: string
+        FontColor:
+          type: string
+        Height:
+          type: number
+        ID:
+          type: string
+        PinCount:
+          type: integer
+        Pinned:
+          items:
+            oneOf:
+            - type: string
+          type: array
+        PinnedByMe:
+          type: boolean
+        Text:
+          type: string
+        Width:
+          type: number
+        X:
+          type: number
+        "Y":
+          type: number
+    orgsHandlerResp:
+      type: object
+      required:
+      - Organizations
+      properties:
+        Organizations:
+          items:
+            $ref: '#/components/schemas/syncOrg'
+          type: array
+    postHandlerReq:
+      type: object
+      required:
+      - Challenge
+      - Content
+      properties:
+        Challenge:
+          type: string
+        Content:
+          type: string
+    postHandlerResp:
+      type: object
+      required:
+      - Thought
+      properties:
+        Thought:
+          $ref: '#/components/schemas/ChallengeThought'
+    putHandlerReq:
+      type: object
+      required:
+      - Public
+      - Content
+      properties:
+        Content:
+          type: string
+        Public:
+          type: boolean
+    putHandlerResp:
+      $ref: '#/components/schemas/postHandlerResp'
+    putParticipantsHandlerReq:
+      type: object
+      required:
+      - Facilitators
+      - Participants
+      properties:
+        Facilitators:
+          items:
+            oneOf:
+            - type: string
+          type: array
+        Participants:
+          items:
+            oneOf:
+            - type: string
+          type: array
+    putParticipantsHandlerResp:
+      $ref: '#/components/schemas/GeneralResponse'
+    searchHandlerResp:
+      type: object
+      required:
+      - Account
+      properties:
+        Account:
+          $ref: '#/components/schemas/syncAccount'
+    stateMessage:
+      type: object
+      required:
+      - Nodes
+      - Links
+      - ActionCount
+      properties:
+        ActionCount:
+          type: integer
+        Links:
+          items:
+            $ref: '#/components/schemas/linkMessage'
+          type: array
+        Nodes:
+          items:
+            $ref: '#/components/schemas/nodeMessage'
+          type: array
+    syncAccount:
+      type: object
+      required:
+      - Username
+      - Email
+      - Name
+      - Activated
+      - SystemAdmin
+      - GlobalCofacilitator
+      - Organizations
+      properties:
+        Activated:
+          type: boolean
+        Email:
+          type: string
+        GlobalCofacilitator:
+          type: boolean
+        Name:
+          type: string
+        Organizations:
+          items:
+            $ref: '#/components/schemas/syncAccountOrg'
+          type: array
+        SystemAdmin:
+          type: boolean
+        Username:
+          type: string
+    syncAccountOrg:
+      type: object
+      required:
+      - ID
+      - Role
+      properties:
+        ID:
+          type: integer
+        Role:
+          type: string
+    syncHandlerReq:
+      type: object
+      required:
+      - Accounts
+      properties:
+        Accounts:
+          items:
+            $ref: '#/components/schemas/syncAccount'
+          type: array
+    syncHandlerResp:
+      type: object
+      properties:
+        Account:
+          $ref: '#/components/schemas/syncAccount'
+    syncOrg:
+      type: object
+      required:
+      - ID
+      - Name
+      - License
+      properties:
+        ID:
+          type: integer
+        License:
+          $ref: '#/components/schemas/syncOrgLicense'
+        Name:
+          type: string
+    syncOrgHandlerReq:
+      type: object
+      required:
+      - Organizations
+      properties:
+        Organizations:
+          items:
+            $ref: '#/components/schemas/syncOrg'
+          type: array
+    syncOrgHandlerResp:
+      type: object
+      properties:
+        Organization:
+          $ref: '#/components/schemas/syncOrg'
+    syncOrgLicense:
+      type: object
+      required:
+      - Name
+      - Seats
+      - Expiry
+      properties:
+        Expiry:
+          type: string
+        Name:
+          type: string
+        Seats:
+          type: integer
+    timeSlice:
+      type: array
+      items: {}
+    toggleHandlerResp:
+      $ref: '#/components/schemas/GeneralResponse'
+    userResp:
+      type: object
+      required:
+      - UUID
+      - Name
+      - Username
+      - Email
+      properties:
+        Email:
+          type: string
+        Name:
+          type: string
+        UUID:
+          type: string
+        Username:
+          type: string
+    websocketClient:
+      type: object
+  responses:
+    BadRequest:
+      description: Bad request format
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralResponse'
+          example:
+            data: Invalid request.
+            success: false
+    InternalServerError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralResponse'
+          example:
+            data: Internal error has occurred. Contact system administrator.
+            success: false
+    Success:
+      description: Successful request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralResponse'
+          example:
+            data: Successful request.
+            success: true
+    Unauthorized:
+      description: Invalid permissions or invalid Authorization header
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralResponse'
+          example:
+            data: Not authorized to perform action.
+            success: false
+    WebsocketError:
+      description: Failed to upgrade request to Websocket connection
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralResponse'
+          example:
+            data: Failed to upgrade request to WebSocket.
+            success: false
